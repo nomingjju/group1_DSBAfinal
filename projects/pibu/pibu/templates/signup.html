@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap" rel="stylesheet">
+  <!-- 위 링크는 'Gasoek One' 폰트를 불러오기 위한 것입니다. -->
+  <style>
+    /* 해당 영역만 'Gasoek One' 폰트로 지정 */
+    .select-skin {
+      font-family: 'Gasoek One', sans-serif;
+      text-align: center;
+    }
+    .description {
+      text-align: left;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .image-wrapper {
+      text-align: center;
+    }
+    .image-wrapper img {
+      width: 100px;
+      height: auto;
+    }
+    .description-wrapper {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .scroll-box {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+    <div class="container d-flex align-items-center justify-content-center vh-100">
+    <form method="post">
+        {{ form.csrf_token }}
+        {% include "form_errors.html" %}
+
+        <!--1페이지-->
+        <div id="page1">
+            <div class="mb-3">
+                <label for="name">이름</label>
+                <input type="text" class="form-control" name="name" id="name"
+                        value="{{ form.name.data or '' }}">
+            </div>
+            <div class="mb-3">
+                <label for="password">전화번호</label>
+                <input type="text" class="form-control" name="password" id="password"
+                        value="{{ form.password.data or '' }}">
+            </div>
+            <div class="mb-3">
+                <label for="email">이메일</label>
+                <input type="text" class="form-control" name="email" id="email"
+                        value="{{ form.email.data or '' }}">
+            </div>
+            <div class="mb-3">
+                <label for="gender">성별</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="gender" id="male" value="1"
+                            {% if form.gender.data == 1 %} checked {% endif %}>
+                    <label class="form-check-label" for="male">남성</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="gender" id="female" value="0"
+                            {% if form.gender.data == 0 %} checked {% endif %}>
+                    <label class="form-check-label" for="female">여성</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="age">나이</label>
+                <input type="text" class="form-control" name="age" id="age"
+                        value="{{ form.age.data or '' }}">
+            </div>
+            <!-- '피부색을 선택해주세요.' 부분을 클래스로 감싸고 해당 클래스에 적용 -->
+            <p class="select-skin">피부타입을 선택해주세요.</p>
+            <div id="drop">
+                <ul>
+                    <li><a href="#" onclick="changeColor(event, 1)"> 건성피부 </a></li>
+                    <li><a href="#" onclick="changeColor(event, 2)"> 지성피부 </a></li>
+                    <li><a href="#" onclick="changeColor(event, 3)"> 민감성피부 </a></li>
+                    <li><a href="#" onclick="changeColor(event, 4)"> 야외활동시 </a></li>
+                </ul>
+                <div class="image-wrapper">
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F7bJLV%2FbtsBuq3LTy1%2FJkcpyu9e38ZoHiA40FlZP1%2Fimg.png" alt="이미지 설명" onclick="displayDescription(1)">
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FIfFDY%2FbtsBvdQvLdM%2FtsI6PaEatrTKVL0H9z7WC1%2Fimg.png" alt="이미지 설명" onclick="displayDescription(2)">
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcqAPLO%2FbtsBx7PJj8w%2FtmobkpanGIj3n4A7UElel1%2Fimg.png" alt="이미지 설명" onclick="displayDescription(3)">
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FtkRN0%2FbtsBufnJuoD%2FO2caH1ihkr8Alw1E1mTPf1%2Fimg.png" alt="이미지 설명" onclick="displayDescription(4)">
+                </div>
+                <div class="description-wrapper">
+                     <p class="description"></p>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="cancelSignup()">취소</button>
+            <button type="button" class="btn btn-warning" onclick="showPage(2)">다음</button>
+        </div>
+         <!--2페이지-->
+        <div id="page2" style="display: none;">
+            <div class="row">
+            <!-- Left Box - 개인정보 제공 동의서 -->
+                <div class="col-md-6">
+                    <div class="scroll-box">
+                        <h4>개인정보 제공 동의서</h4>
+                        <!-- Add your long content here -->
+                        본인은 UV무환의 서비스를 이용하기 위해 본인의 개인정보(이름, 전화번호, 이메일, 성별, 나이 포함) 수집 목적 등 아래 유의사항을 이해하였으며, 이를 위해 ｢개인정보보호법｣ 등에 의해 보호되고 있는 본인의 개인정보를 동법 제15조(개인정보의 수집ㆍ이용)의 규정 등에 따라 UV무환에 제공하는데 동의합니다.
+                        <!-- ... -->
+                    </div>
+                    <div class="mb-3">
+                        <input class="form-check-input" type="checkbox" name="agree_personal" id="agree_personal" value="1">
+                        <label class="form-check-label" for="agree_personal">동의</label>
+                    </div>
+                </div>
+
+                <!-- Right Box - 위치정보 수집 동의서 -->
+                <div class="col-md-6">
+                    <div class="scroll-box">
+                        <h4>위치정보 수집 동의서</h4>
+                        <!-- Add your long content here -->
+                        본인은 UV무환의 자외선 지도 서비스를 이용하기 위해 본인의 위치정보 수집 목적 등 유의사항을 이해하였으며, 이를 위해 본인의 위치정보를 UV무환에 제공하는데 동의합니다. 본 위치정보 제공은 UV무환이 제공하는 서비스를 이용함에 있어 회원의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+                        <!-- ... -->
+                    </div>
+                    <div class="mb-3">
+                        <input class="form-check-input" type="checkbox" name="agree_location" id="agree_location" value="1">
+                        <label class="form-check-label" for="agree_location">동의</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" onclick="showPage(1)">뒤로</button>
+            <button type="submit" class="btn btn-warning" id="submitBtn" disabled>회원가입</button>
+        </div>
+
+        <script>
+            function changeColor(event, index) {
+                event.preventDefault();
+                let lis = document.querySelectorAll("#drop ul li");
+                let descriptions = [
+                    "'피부에 수분과 윤기가 모두 부족하거나 각질이 많고 건조하다', '세안 후 즉각적으로 피부가 당기고 잔주름이 잘 생긴다' 모두 다 내 얘기 같은 건성 피부라면? 보습 기능이 있어 피부에 잘 밀착되는 자외선 차단제를 선택하는 것이 좋습니다.",
+                    "크림이나 로션보다는 피지를 잡아 줄 수 있는 파우더 타입 자외선 차단제가 훨씬 효과적입니다. 피지 분비가 활발한 T존은 피지 조절 기능이 있는 제품을, 건조한 U존은 보습력이 높고 끈적임이 적은 제품을 사용하면 좋습니다.",
+                    "피부가 얇아 계절이나 주변 환경에 따라 가려움증이 생기거나 햇빛에 노출되면 빨갛게 달아오르기도 하는데요. 발림성이 다소 떨어지더라도 모공을 막기 쉬운 성분이 함유되지 않은 제품을 선택하는 것이 안전합니다.",
+                    "야외에서 스포츠를 할 경우 자외선에 의해 염증이 일어나기 쉽고 잔주름과 기미가 생기기 쉽기에 스포츠를 하기 전날 보습 팩과 마사지로 피부에 수분과 영양을 공급해주어야 다음날 운동으로 인한 수분증발이나 자외선에 손상을 덜 받습니다."
+                ];
+
+                // 설명 업데이트
+                document.querySelector(".description").innerText = descriptions[index - 1];
+
+                // 모든 요소의 배경색을 원래 색으로 초기화
+                lis.forEach(function(li) {
+                    li.style.backgroundColor = "#ffb730";
+                });
+
+                // 클릭된 요소의 배경색 변경
+                lis[index - 1].style.backgroundColor = "#e8491d";
+            }
+
+            function displayDescription(index) {
+                let descriptions = [
+                    "'피부에 수분과 윤기가 모두 부족하거나 각질이 많고 건조하다', '세안 후 즉각적으로 피부가 당기고 잔주름이 잘 생긴다' 모두 다 내 얘기 같은 건성 피부라면? 보습 기능이 있어 피부에 잘 밀착되는 자외선 차단제를 선택하는 것이 좋습니다. ",
+                    "크림이나 로션보다는 피지를 잡아 줄 수 있는 파우더 타입 자외선 차단제가 훨씬 효과적입니다. 피지 분비가 활발한 T존은 피지 조절 기능이 있는 제품을, 건조한 U존은 보습력이 높고 끈적임이 적은 제품을 사용하면 좋습니다.",
+                    "피부가 얇아 계절이나 주변 환경에 따라 가려움증이 생기거나 햇빛에 노출되면 빨갛게 달아오르기도 하는데요. 발림성이 다소 떨어지더라도 모공을 막기 쉬운 성분이 함유되지 않은 제품을 선택하는 것이 안전합니다.",
+                    "야외에서 스포츠를 할 경우 자외선에 의해 염증이 일어나기 쉽고 잔주름과 기미가 생기기 쉽기에 스포츠를 하기 전날 보습 팩과 마사지로 피부에 수분과 영양을 공급해주어야 다음날 운동으로 인한 수분증발이나 자외선에 손상을 덜 받습니다."
+                ];
+                document.querySelector(".description").innerText = descriptions[index - 1];
+            }
+
+            function showPage(pageNumber) {
+                if (pageNumber === 1) {
+                    document.getElementById('page1').style.display = 'block';
+                    document.getElementById('page2').style.display = 'none';
+                } else if (pageNumber === 2) {
+                    document.getElementById('page1').style.display = 'none';
+                    document.getElementById('page2').style.display = 'block';
+                }
+            }
+
+            function cancelSignup() {
+                // Redirect to the index page or perform any other cancel action
+                window.location.href = "/";  // Replace with the actual URL
+            }
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    var personalAgree = document.getElementById('agree_personal').checked;
+                    var locationAgree = document.getElementById('agree_location').checked;
+                    var submitBtn = document.getElementById('submitBtn');
+
+                    // Enable the submit button if both checkboxes are checked
+                    submitBtn.disabled = !(personalAgree && locationAgree);
+                });
+            });
+        </script>
+    </form>
+</body>
+
+</html>
+{% endblock %}
