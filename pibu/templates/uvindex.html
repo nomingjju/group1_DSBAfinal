@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang=ko>
+<head>
+    <title>자외선 지수 맵</title>
+    <style>
+        /* 스타일 시트 내용 */
+        body {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px; /* 열 간격 설정 */
+        }
+
+        .left-column {
+            width: 50%; /* 왼쪽 열의 너비를 늘림 */
+            margin-bottom: 20px; /* 간격 설정 */
+        }
+
+        .right-column {
+            width: 45%; /* 오른쪽 열의 너비를 조정 */
+            margin-bottom: 20px; /* 간격 설정 */
+            order: -1; /* 오른쪽 열을 첫 번째로 배치 */
+        }
+
+        .map-container {
+            width: 100%; /* 맵 컨테이너를 가득 채우도록 조정 */
+            text-align: center;
+            overflow: hidden; /* 지도 영역을 벗어나는 부분 숨김 */
+        }
+
+        /* 타이틀과 h1 요소들의 스타일 설정 */
+        .title, h1 {
+            background-color: #ffcc00; /* 배경색을 노란색으로 설정 */
+            color: #6e6e6e; /* 글씨 색을 어두운 회색으로 설정 */
+            padding: 10px; /* 내부 여백 설정 */
+            border-radius: 5px; /* 테두리를 둥글게 만듦 */
+            pointer-events: none; /* 클릭 이벤트 비활성화 */
+            font-size: 14px; /* 글자 크기를 상속받아 동일하게 설정 */
+            margin-bottom: 8px; /* 아래쪽 마진을 추가하여 간격 띄움 */
+        }
+
+        /* 위치 입력과 위치 요소 사이의 간격 조정 */
+        form {
+            margin-bottom: 10px; /* 아래쪽 마진을 추가하여 간격 띄움 */
+        }
+
+        /* 추가된 스타일: 자외선 지수 정보 부분 */
+        .uv-info {
+            background-color: #f5f5f5; /* 배경색 설정 */
+            padding: 11px; /* 내부 여백 설정 */
+            border-radius: 5px; /* 테두리를 둥글게 만듦 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+        }
+
+        .uv-info p {
+            margin-bottom: 10px; /* 아래쪽 마진 설정 */
+            line-height: 1.6; /* 줄간격 설정 */
+        }
+
+        .uv-info h2 {
+            font-size: 18px; /* 글자 크기 설정 */
+            margin-bottom: 15px; /* 아래쪽 마진 설정 */
+        }
+
+        /* 스타일 시트 내용 */
+        .navbar {
+            position: relative; /* 또는 다른 값을 설정하여 조절 */
+            /* 기존 스타일 유지... */
+        }
+
+        .left-column,
+        .right-column {
+            /* 기존 스타일 유지... */
+            margin-top: 135px; /* 네비게이션바 높이만큼 여백 추가 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션바 -->
+    {% include "navbar.html" %}
+    <div class="left-column">
+        <div class="title">
+            <h1>위치 입력</h1>
+        </div>
+        <form action="/uvmuhwan/uvindex" method="post">
+            <label for="location">위치:</label>
+            <input type="text" id="location" name="location" placeholder="위치 입력" style="width: 80%;">
+            <input type="submit" value="자외선 지수 확인">
+        </form>
+
+        {% if uv_info %}
+        <div class="title">
+            <h1>자외선 지수 정보</h1>
+        </div>
+        <!-- 추가된 부분: 자외선 지수 정보 -->
+        <div class="uv-info">
+            <p>지역 : {{ uv_info.location }}</p>
+            <p>행정 코드 : {{ uv_info.admin_code }}</p>
+            <p>현재 날짜와 시간 : {{ uv_info.current_datetime }}</p>
+            <p>현재 자외선 지수 : {{ uv_info.uv_index }}</p>
+            <p>자외선 지수 경고 레벨 : {{ uv_info.uv_warning_level }}</p>
+            {% if uv_info.uv_warning_info %}
+            <p>행동 요령:</p>
+            <p>{{ uv_info.uv_warning_info }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="right-column">
+        {% if map %}
+        <div class="title">
+            <h1>자외선 지수 맵</h1>
+        </div>
+        <div class="map-container">
+            <!-- 여기에 지도를 표시할 공간을 만듭니다. -->
+            <div style="width: 200%; height: 500px; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: white;">
+                    {{ map | safe }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+{% endblock %}
